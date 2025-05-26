@@ -39,7 +39,7 @@ const FormSchema = z.object({
 
 const ZondSignTypedDataV4Content = observer(() => {
   const { zondStore, dAppRequestStore } = useStore();
-  const { zondConnection } = zondStore;
+  const { zondInstance, zondConnection } = zondStore;
   const { isConnected } = zondConnection;
   const {
     dAppRequestData,
@@ -51,7 +51,7 @@ const ZondSignTypedDataV4Content = observer(() => {
   const { isProcessing } = approvalProcessingStatus;
 
   const params = dAppRequestData?.params;
-  // const fromAddress = params?.[0] ?? "";
+  const fromAddress = params?.[0] ?? "";
   const typedData = params?.[1];
   const name = typedData?.domain?.name;
   const verifyingContract = typedData?.domain?.verifyingContract ?? "";
@@ -88,6 +88,12 @@ const ZondSignTypedDataV4Content = observer(() => {
   const signTypedDataV4 = async () => {
     try {
       const mnemonicPhrases = watch().mnemonicPhrases.trim();
+      const addressFromMnemonic = zondInstance?.accounts.seedToAccount(
+        getHexSeedFromMnemonic(mnemonicPhrases),
+      )?.address;
+      if (fromAddress !== addressFromMnemonic) {
+        throw new Error("Mnemonic phrases did not match with the address");
+      }
       const messageHash = getEncodedEip712Data(typedData, true);
       const signature = sign(
         messageHash,
