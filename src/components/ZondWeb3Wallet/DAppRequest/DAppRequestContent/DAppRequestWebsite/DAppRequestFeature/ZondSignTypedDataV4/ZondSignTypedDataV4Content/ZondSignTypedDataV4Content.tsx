@@ -5,6 +5,8 @@ import {
   AccordionTrigger,
 } from "@/components/UI/Accordion";
 import { Button } from "@/components/UI/Button";
+import { getEncodedEip712Data } from "@theqrl/web3-zond-abi";
+import { sign } from "@theqrl/web3-zond-accounts";
 import {
   Form,
   FormControl,
@@ -29,6 +31,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { getHexSeedFromMnemonic } from "@/functions/getHexSeedFromMnemonic";
 
 const FormSchema = z.object({
   mnemonicPhrases: z.string().min(1, "Mnemonic phrases are required"),
@@ -36,10 +39,7 @@ const FormSchema = z.object({
 
 const ZondSignTypedDataV4Content = observer(() => {
   const { zondStore, dAppRequestStore } = useStore();
-  const {
-    // zondInstance, getGasFeeData,
-    zondConnection,
-  } = zondStore;
+  const { zondConnection } = zondStore;
   const { isConnected } = zondConnection;
   const {
     dAppRequestData,
@@ -51,9 +51,7 @@ const ZondSignTypedDataV4Content = observer(() => {
   const { isProcessing } = approvalProcessingStatus;
 
   const params = dAppRequestData?.params;
-  const fromAddress = params?.[0] ?? "";
-  const { prefix: prefixFrom, addressSplit: addressSplitFrom } =
-    StringUtil.getSplitAddress(fromAddress);
+  // const fromAddress = params?.[0] ?? "";
   const typedData = params?.[1];
   const name = typedData?.domain?.name;
   const verifyingContract = typedData?.domain?.verifyingContract ?? "";
@@ -74,13 +72,6 @@ const ZondSignTypedDataV4Content = observer(() => {
 
   useEffect(() => {
     if (isConnected) {
-      console.log(
-        ">>>>dAppRequestData\n",
-        prefixFrom,
-        addressSplitFrom,
-        "\n",
-        typedData,
-      );
       const onPermissionCallBack = async (hasApproved: boolean) => {
         if (hasApproved) {
           signTypedDataV4();
@@ -95,14 +86,13 @@ const ZondSignTypedDataV4Content = observer(() => {
   };
 
   const signTypedDataV4 = async () => {
-    const mnemonicPhrases = watch().mnemonicPhrases.trim();
-    console.log(">>>>mnemonicPhrases", mnemonicPhrases);
     try {
-      // const signature = await zondInstance?.accounts.signTransaction(
-      //   transactionObject,
-      //   getHexSeedFromMnemonic(mnemonicPhrases),
-      // );
-      const signature = null;
+      const mnemonicPhrases = watch().mnemonicPhrases.trim();
+      const messageHash = getEncodedEip712Data(typedData, true);
+      const signature = sign(
+        messageHash,
+        getHexSeedFromMnemonic(mnemonicPhrases),
+      )?.signature;
       if (signature) {
         addToResponseData({
           signature,
