@@ -277,7 +277,7 @@ class StorageUtil {
     });
   }
 
-  static async getConnectedAccountsData(urlOrigin: string) {
+  static async getConnectedAccountsData(urlOrigin: string = "") {
     const blockChain = await this.getBlockChain();
     const connectedAccountsDataIdentifier = `${blockChain}_${urlOrigin}_${CONNECTED_ACCOUNTS_DATA_IDENTIFIER}`;
     const storedConnectedAccountsData = await browser.storage.local.get(
