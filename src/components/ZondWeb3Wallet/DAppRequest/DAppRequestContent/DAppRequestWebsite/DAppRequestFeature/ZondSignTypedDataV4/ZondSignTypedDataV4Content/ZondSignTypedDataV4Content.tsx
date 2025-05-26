@@ -52,6 +52,8 @@ const ZondSignTypedDataV4Content = observer(() => {
 
   const params = dAppRequestData?.params;
   const fromAddress = params?.[0] ?? "";
+  const { prefix: prefixFromAddress, addressSplit: addressSplitFromAddress } =
+    StringUtil.getSplitAddress(fromAddress);
   const typedData = params?.[1];
   const name = typedData?.domain?.name;
   const verifyingContract = typedData?.domain?.verifyingContract ?? "";
@@ -131,6 +133,12 @@ const ZondSignTypedDataV4Content = observer(() => {
 
   return (
     <div className="flex flex-col gap-6">
+      <div className="flex flex-col rounded-md bg-muted p-2">
+        <div className="flex flex-col gap-1">
+          <div>From Address</div>
+          <div className="w-64 font-bold text-secondary">{`${prefixFromAddress} ${addressSplitFromAddress.join(" ")}`}</div>
+        </div>
+      </div>
       <Accordion
         type="multiple"
         className="w-full space-y-6"
@@ -193,7 +201,7 @@ const ZondSignTypedDataV4Content = observer(() => {
                 <div className="ml-6 flex flex-col gap-1">
                   <div>Name</div>
                   <div className="font-bold text-secondary">{fromName}</div>
-                  <div>Account address</div>
+                  <div>Account Address</div>
                   <div className="font-bold text-secondary">
                     {`${prefixFromWallet} ${addressSplitFromWallet.join(" ")}`}
                   </div>
@@ -204,7 +212,7 @@ const ZondSignTypedDataV4Content = observer(() => {
                 <div className="ml-6 flex flex-col gap-1">
                   <div>Name</div>
                   <div className="font-bold text-secondary">{toName}</div>
-                  <div>Account address</div>
+                  <div>Account Address</div>
                   <div className="font-bold text-secondary">
                     {`${prefixToWallet} ${addressSplitToWallet.join(" ")}`}
                   </div>
@@ -225,7 +233,7 @@ const ZondSignTypedDataV4Content = observer(() => {
             name="mnemonicPhrases"
             render={({ field }) => (
               <FormItem>
-                <Label>Mnemonic phrases</Label>
+                <Label>Mnemonic Phrases</Label>
                 <FormControl>
                   <Input
                     {...field}

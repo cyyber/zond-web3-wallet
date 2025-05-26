@@ -24,6 +24,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Buffer } from "buffer";
 import { getHexSeedFromMnemonic } from "@/functions/getHexSeedFromMnemonic";
+import StringUtil from "@/utilities/stringUtil";
 
 const FormSchema = z.object({
   mnemonicPhrases: z.string().min(1, "Mnemonic phrases are required"),
@@ -47,6 +48,8 @@ const PersonalSign = observer(() => {
     "utf8",
   );
   const fromAddress = params?.[1] ?? "";
+  const { prefix: prefixFromAddress, addressSplit: addressSplitFromAddress } =
+    StringUtil.getSplitAddress(fromAddress);
 
   useEffect(() => {
     if (isConnected) {
@@ -108,29 +111,35 @@ const PersonalSign = observer(() => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <div>Message</div>
-        <div className="flex gap-2">
-          <div className="max-h-[8rem] w-full overflow-hidden break-words font-bold text-secondary">
-            {challenge}
+      <div className="flex flex-col gap-2 rounded-md bg-muted p-2">
+        <div className="flex flex-col gap-1">
+          <div>From Address</div>
+          <div className="w-64 font-bold text-secondary">{`${prefixFromAddress} ${addressSplitFromAddress.join(" ")}`}</div>
+        </div>
+        <div className="flex flex-col gap-1">
+          <div>Message</div>
+          <div className="flex gap-2">
+            <div className="max-h-[8rem] w-full overflow-hidden break-words font-bold text-secondary">
+              {challenge}
+            </div>
+            <TooltipProvider>
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="w-12 hover:text-secondary"
+                    variant="outline"
+                    size="icon"
+                    onClick={copyMessage}
+                  >
+                    <Copy size="18" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <Label>Copy Message</Label>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
-          <TooltipProvider>
-            <Tooltip delayDuration={0}>
-              <TooltipTrigger asChild>
-                <Button
-                  className="w-12 hover:text-secondary"
-                  variant="outline"
-                  size="icon"
-                  onClick={copyMessage}
-                >
-                  <Copy size="18" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <Label>Copy Message</Label>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
         </div>
       </div>
       <Form {...form}>
@@ -144,7 +153,7 @@ const PersonalSign = observer(() => {
             name="mnemonicPhrases"
             render={({ field }) => (
               <FormItem>
-                <Label>Mnemonic phrases</Label>
+                <Label>Mnemonic Phrases</Label>
                 <FormControl>
                   <Input
                     {...field}

@@ -230,7 +230,7 @@ const ZondSendTransactionForContent = observer(
           <TabsContent value="details" className="rounded-md bg-muted p-2">
             <div className="flex flex-col gap-2">
               <div className="flex flex-col gap-1">
-                <div>From address</div>
+                <div>From Address</div>
                 <div className="w-64 font-bold text-secondary">{`${prefixFrom} ${addressSplitFrom.join(" ")}`}</div>
               </div>
               {(transactionType ===
@@ -242,7 +242,7 @@ const ZondSendTransactionForContent = observer(
                     SEND_TRANSACTION_TYPES.CONTRACT_INTERACTION
                       ? "Contract "
                       : "To "}
-                    address
+                    Address
                   </div>
                   <div className="w-64 font-bold text-secondary">{`${prefixTo} ${addressSplitTo.join(" ")}`}</div>
                 </div>
@@ -304,7 +304,7 @@ const ZondSendTransactionForContent = observer(
               name="mnemonicPhrases"
               render={({ field }) => (
                 <FormItem>
-                  <Label>Mnemonic phrases</Label>
+                  <Label>Mnemonic Phrases</Label>
                   <FormControl>
                     <Input
                       {...field}
