@@ -10,28 +10,37 @@ import {
 import { EXTENSION_MESSAGES } from "../constants/streamConstants";
 import { DAppRequestType, DAppResponseType } from "./middlewareTypes";
 
+const getFromAddress = (req: JsonRpcRequest<JsonRpcRequest>) => {
+  switch (req.method) {
+    case RESTRICTED_METHODS.ZOND_SEND_TRANSACTION:
+      // @ts-ignore
+      return req.params?.[0]?.from ?? "";
+    case RESTRICTED_METHODS.ZOND_SIGN_TYPED_DATA_V4:
+      // @ts-ignore
+      return req.params?.[0];
+    case RESTRICTED_METHODS.PERSONAL_SIGN:
+      // @ts-ignore
+      return req.params?.[1];
+  }
+};
+
 // a precheck to determine if the request can proceed
 const checkRequestCanProceed = async (req: JsonRpcRequest<JsonRpcRequest>) => {
-  let signingFromAddress = "";
   switch (req.method) {
+    case RESTRICTED_METHODS.ZOND_SEND_TRANSACTION:
     case RESTRICTED_METHODS.ZOND_SIGN_TYPED_DATA_V4:
     case RESTRICTED_METHODS.PERSONAL_SIGN:
-      signingFromAddress =
-        req.method === RESTRICTED_METHODS.ZOND_SIGN_TYPED_DATA_V4
-          ? // @ts-ignore
-            req.params?.[0]
-          : // @ts-ignore
-            req.params?.[1];
+      const fromAddress = getFromAddress(req);
       const urlOrigin = new URL(req?.senderData?.url ?? "").origin;
       const connectedAccounts =
         await StorageUtil.getConnectedAccountsData(urlOrigin);
-      const hasFromAddressConnected =
-        connectedAccounts?.accounts.includes(signingFromAddress) ?? false;
+      const hasAddressConnected =
+        connectedAccounts?.accounts.includes(fromAddress) ?? false;
       return {
-        canProceed: hasFromAddressConnected,
+        canProceed: hasAddressConnected,
         proceedError: {
           code: METHOD_ERROR_CODES.UNAUTHORIZED_ACCOUNT,
-          message: `The requested account ${signingFromAddress} has not been authorized by the user.`,
+          message: `The requested account ${fromAddress} has not been authorized by the user.`,
         },
       };
     default:
