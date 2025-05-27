@@ -3,10 +3,43 @@ import { JsonRpcMiddleware } from "@theqrl/zond-wallet-provider/json-rpc-engine"
 import { providerErrors } from "@theqrl/zond-wallet-provider/rpc-errors";
 import { Json, JsonRpcRequest } from "@theqrl/zond-wallet-provider/utils";
 import browser from "webextension-polyfill";
-import { RESTRICTED_METHODS } from "../constants/requestConstants";
+import {
+  METHOD_ERROR_CODES,
+  RESTRICTED_METHODS,
+} from "../constants/requestConstants";
 import { EXTENSION_MESSAGES } from "../constants/streamConstants";
 import { DAppRequestType, DAppResponseType } from "./middlewareTypes";
 
+// a precheck to determine if the request can proceed
+const checkRequestCanProceed = async (req: JsonRpcRequest<JsonRpcRequest>) => {
+  let signingFromAddress = "";
+  switch (req.method) {
+    case RESTRICTED_METHODS.ZOND_SIGN_TYPED_DATA_V4:
+    case RESTRICTED_METHODS.PERSONAL_SIGN:
+      signingFromAddress =
+        req.method === RESTRICTED_METHODS.ZOND_SIGN_TYPED_DATA_V4
+          ? // @ts-ignore
+            req.params?.[0]
+          : // @ts-ignore
+            req.params?.[1];
+      const urlOrigin = new URL(req?.senderData?.url ?? "").origin;
+      const connectedAccounts =
+        await StorageUtil.getConnectedAccountsData(urlOrigin);
+      const hasFromAddressConnected =
+        connectedAccounts?.accounts.includes(signingFromAddress) ?? false;
+      return {
+        canProceed: hasFromAddressConnected,
+        proceedError: {
+          code: METHOD_ERROR_CODES.UNAUTHORIZED_ACCOUNT,
+          message: `The requested account ${signingFromAddress} has not been authorized by the user.`,
+        },
+      };
+    default:
+      return { canProceed: true, proceedError: { code: 0, message: "" } };
+  }
+};
+
+// get the result of the user approval/rejection of the request
 const getRestrictedMethodResult = async (
   req: JsonRpcRequest<JsonRpcRequest>,
 ): Promise<DAppResponseType> => {
@@ -61,6 +94,18 @@ export const restrictedMethodsMiddleware: JsonRpcMiddleware<
       }
       end();
     } else {
+      // check if the request can proceed
+      const { canProceed, proceedError } = await checkRequestCanProceed(req);
+      if (!canProceed) {
+        res.error = providerErrors.custom({
+          code: proceedError?.code ?? METHOD_ERROR_CODES.UNSUPPORTED_METHOD,
+          message: proceedError?.message,
+        });
+        end();
+        return;
+      }
+
+      // open the popup and wait for the user to approve/reject the request
       let restrictedMethodResult: DAppResponseType = {
         method: "",
         action: "",

@@ -24,3 +24,8 @@ export const ALL_REQUEST_METHODS = Object.values({
   ...RESTRICTED_METHODS,
   ...UNRESTRICTED_METHODS,
 });
+
+export const METHOD_ERROR_CODES = Object.freeze({
+  UNSUPPORTED_METHOD: 4001,
+  UNAUTHORIZED_ACCOUNT: 4100,
+});
