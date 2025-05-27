@@ -288,7 +288,7 @@ class StorageUtil {
       | undefined;
   }
 
-  static async clearConnectedAccountsData(urlOrigin: string) {
+  static async clearConnectedAccountsData(urlOrigin: string = "") {
     const blockChain = (await this.getBlockChain()).blockchain;
     const connectedAccountsDataIdentifier = `${blockChain}_${urlOrigin}_${CONNECTED_ACCOUNTS_DATA_IDENTIFIER}`;
     await browser.storage.local.remove(connectedAccountsDataIdentifier);
