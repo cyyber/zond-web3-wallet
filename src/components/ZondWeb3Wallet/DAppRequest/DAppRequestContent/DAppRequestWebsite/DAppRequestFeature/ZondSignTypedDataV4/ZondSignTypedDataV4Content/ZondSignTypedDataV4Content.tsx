@@ -181,6 +181,7 @@ const ZondSignTypedDataV4Content = observer(() => {
                         className="w-10 hover:text-secondary"
                         variant="outline"
                         size="icon"
+                        aria-label="Copy message data"
                         onClick={copyMessageData}
                       >
                         <Copy size="18" />

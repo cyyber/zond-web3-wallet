@@ -129,6 +129,7 @@ const PersonalSign = observer(() => {
                     className="w-12 hover:text-secondary"
                     variant="outline"
                     size="icon"
+                    aria-label="Copy message"
                     onClick={copyMessage}
                   >
                     <Copy size="18" />
