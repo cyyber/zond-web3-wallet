@@ -48,13 +48,13 @@ describe("ZondSendTransactionForContent", () => {
     const dataTab = screen.getByRole("tab", { name: "Data" });
     expect(detailsTab).toBeInTheDocument();
     expect(dataTab).toBeInTheDocument();
-    expect(screen.getByText("From address")).toBeInTheDocument();
+    expect(screen.getByText("From Address")).toBeInTheDocument();
     expect(
       screen.getByText("Z 20D20 b8026 B8F02 54024 6f581 20ddA Af35A ECD9B"),
     ).toBeInTheDocument();
     expect(screen.getByText("Gas Limit")).toBeInTheDocument();
     expect(screen.getByText("117683")).toBeInTheDocument();
-    expect(screen.getByText("Mnemonic phrases")).toBeInTheDocument();
+    expect(screen.getByText("Mnemonic Phrases")).toBeInTheDocument();
     const mnemonicPhrasesField = screen.getByRole("textbox", {
       name: "mnemonicPhrases",
     });
@@ -92,13 +92,13 @@ describe("ZondSendTransactionForContent", () => {
     const dataTab = screen.getByRole("tab", { name: "Data" });
     expect(detailsTab).toBeInTheDocument();
     expect(dataTab).toBeInTheDocument();
-    expect(screen.getByText("From address")).toBeInTheDocument();
+    expect(screen.getByText("From Address")).toBeInTheDocument();
     expect(
       screen.getByText("Z 20D20 b8026 B8F02 54024 6f581 20ddA Af35A ECD9B"),
     ).toBeInTheDocument();
     expect(screen.getByText("Gas Limit")).toBeInTheDocument();
     expect(screen.getByText("117683")).toBeInTheDocument();
-    expect(screen.getByText("Mnemonic phrases")).toBeInTheDocument();
+    expect(screen.getByText("Mnemonic Phrases")).toBeInTheDocument();
     const mnemonicPhrasesField = screen.getByRole("textbox", {
       name: "mnemonicPhrases",
     });
@@ -135,11 +135,11 @@ describe("ZondSendTransactionForContent", () => {
     const dataTab = screen.queryByRole("tab", { name: "Data" });
     expect(detailsTab).toBeInTheDocument();
     expect(dataTab).not.toBeInTheDocument();
-    expect(screen.getByText("From address")).toBeInTheDocument();
+    expect(screen.getByText("From Address")).toBeInTheDocument();
     expect(
       screen.getByText("Z 20D20 b8026 B8F02 54024 6f581 20ddA Af35A ECD9B"),
     ).toBeInTheDocument();
-    expect(screen.getByText("To address")).toBeInTheDocument();
+    expect(screen.getByText("To Address")).toBeInTheDocument();
     expect(
       screen.getByText("Z 20EE9 76078 6AD48 aB90E 326c5 cd78c 6269B a10AB"),
     ).toBeInTheDocument();
@@ -147,7 +147,7 @@ describe("ZondSendTransactionForContent", () => {
     expect(screen.getByText("48")).toBeInTheDocument();
     expect(screen.getByText("Gas Limit")).toBeInTheDocument();
     expect(screen.getByText("117589")).toBeInTheDocument();
-    expect(screen.getByText("Mnemonic phrases")).toBeInTheDocument();
+    expect(screen.getByText("Mnemonic Phrases")).toBeInTheDocument();
     const mnemonicPhrasesField = screen.getByRole("textbox", {
       name: "mnemonicPhrases",
     });
