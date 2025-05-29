@@ -266,6 +266,9 @@ const prepareListeners = () => {
         const [address, block] = message.data.params;
         const transactionCount = await zond.getTransactionCount(address, block);
         return "0x".concat(transactionCount.toString(16));
+      } else if (method === UNRESTRICTED_METHODS.ZOND_GAS_PRICE) {
+        const gasPrice = await zond.getGasPrice();
+        return "0x".concat(gasPrice.toString(16));
       } else {
         return "";
       }
