@@ -262,6 +262,10 @@ const prepareListeners = () => {
           bytes: FMT_BYTES.HEX,
         });
         return chainId;
+      } else if (method === UNRESTRICTED_METHODS.ZOND_GET_TRANSACTION_COUNT) {
+        const [address, block] = message.data.params;
+        const transactionCount = await zond.getTransactionCount(address, block);
+        return "0x".concat(transactionCount.toString(16));
       } else {
         return "";
       }
