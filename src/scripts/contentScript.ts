@@ -269,6 +269,10 @@ const prepareListeners = () => {
       } else if (method === UNRESTRICTED_METHODS.ZOND_GAS_PRICE) {
         const gasPrice = await zond.getGasPrice();
         return "0x".concat(gasPrice.toString(16));
+      } else if (method === UNRESTRICTED_METHODS.ZOND_GET_BLOCK_BY_HASH) {
+        const [blockHash, hydrated] = message.data.params;
+        const blockInformation = await zond.getBlock(blockHash, hydrated);
+        return getSerializableObject(blockInformation);
       } else {
         return "";
       }
