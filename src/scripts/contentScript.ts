@@ -1,5 +1,5 @@
 import StorageUtil from "@/utilities/storageUtil";
-import Web3 from "@theqrl/web3";
+import Web3, { FMT_BYTES, FMT_NUMBER } from "@theqrl/web3";
 import {
   ObjectMultiplex,
   Substream,
@@ -256,6 +256,12 @@ const prepareListeners = () => {
         const [address, blockNumber] = message.data.params;
         const byteCode = await zond.getCode(address, blockNumber);
         return byteCode;
+      } else if (method === UNRESTRICTED_METHODS.ZOND_CHAIN_ID) {
+        const chainId = await zond.getChainId({
+          number: FMT_NUMBER.HEX,
+          bytes: FMT_BYTES.HEX,
+        });
+        return chainId;
       } else {
         return "";
       }

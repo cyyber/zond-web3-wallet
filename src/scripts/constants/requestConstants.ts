@@ -11,6 +11,7 @@ export const UNRESTRICTED_METHODS = Object.freeze({
   ZOND_GET_TRANSACTION_BY_HASH: "zond_getTransactionByHash",
   ZOND_CALL: "zond_call",
   ZOND_GET_CODE: "zond_getCode",
+  ZOND_CHAIN_ID: "zond_chainId",
 });
 
 export const RESTRICTED_METHODS = Object.freeze({
