@@ -317,7 +317,7 @@ const TokenTransfer = observer(() => {
                 name="mnemonicPhrases"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Mnemonic phrases</Label>
+                    <Label>Mnemonic Phrases</Label>
                     <FormControl>
                       <Input
                         {...field}

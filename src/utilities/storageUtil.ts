@@ -236,7 +236,7 @@ class StorageUtil {
    * Call the getDAppRequestData function to retrieve the stored value, and clearFromTokenList for clearing the stored value.
    */
   static async setDAppRequestData(data: DAppRequestType) {
-    const blockChain = await this.getBlockChain();
+    const blockChain = (await this.getBlockChain()).blockchain;
     const dAppRequestDataIdentifier = `${blockChain}_${DAPP_REQUEST_DATA_IDENTIFIER}`;
     await browser.storage.session.set({
       [dAppRequestDataIdentifier]: data,
@@ -244,7 +244,7 @@ class StorageUtil {
   }
 
   static async getDAppRequestData() {
-    const blockChain = await this.getBlockChain();
+    const blockChain = (await this.getBlockChain()).blockchain;
     const dAppRequestDataIdentifier = `${blockChain}_${DAPP_REQUEST_DATA_IDENTIFIER}`;
     const storedDAppRequestData = await browser.storage.session.get(
       dAppRequestDataIdentifier,
@@ -255,7 +255,7 @@ class StorageUtil {
   }
 
   static async clearDAppRequestData() {
-    const blockChain = await this.getBlockChain();
+    const blockChain = (await this.getBlockChain()).blockchain;
     const dAppRequestDataIdentifier = `${blockChain}_${DAPP_REQUEST_DATA_IDENTIFIER}`;
     await browser.storage.session.remove(dAppRequestDataIdentifier);
   }
@@ -266,7 +266,7 @@ class StorageUtil {
    */
   static async setConnectedAccountsData(data: ConnectedAccountsDataType) {
     const urlOrigin = data.urlOrigin;
-    const blockChain = await this.getBlockChain();
+    const blockChain = (await this.getBlockChain()).blockchain;
     const connectedAccountsDataIdentifier = `${blockChain}_${urlOrigin}_${CONNECTED_ACCOUNTS_DATA_IDENTIFIER}`;
     const updatedConnectedAccountsData: ConnectedAccountsDataType = {
       urlOrigin,
@@ -277,8 +277,8 @@ class StorageUtil {
     });
   }
 
-  static async getConnectedAccountsData(urlOrigin: string) {
-    const blockChain = await this.getBlockChain();
+  static async getConnectedAccountsData(urlOrigin: string = "") {
+    const blockChain = (await this.getBlockChain()).blockchain;
     const connectedAccountsDataIdentifier = `${blockChain}_${urlOrigin}_${CONNECTED_ACCOUNTS_DATA_IDENTIFIER}`;
     const storedConnectedAccountsData = await browser.storage.local.get(
       connectedAccountsDataIdentifier,
@@ -288,8 +288,8 @@ class StorageUtil {
       | undefined;
   }
 
-  static async clearConnectedAccountsData(urlOrigin: string) {
-    const blockChain = await this.getBlockChain();
+  static async clearConnectedAccountsData(urlOrigin: string = "") {
+    const blockChain = (await this.getBlockChain()).blockchain;
     const connectedAccountsDataIdentifier = `${blockChain}_${urlOrigin}_${CONNECTED_ACCOUNTS_DATA_IDENTIFIER}`;
     await browser.storage.local.remove(connectedAccountsDataIdentifier);
   }

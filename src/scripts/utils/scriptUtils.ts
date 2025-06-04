@@ -29,6 +29,15 @@ export function checkForLastError() {
 }
 
 export function getSerializableObject(jsonObject: any) {
+  if (jsonObject?.error) {
+    const error = jsonObject?.error;
+    return {
+      error: {
+        message: error?.message,
+        stack: error?.stack,
+      },
+    };
+  }
   return JSON.parse(
     JSON.stringify(jsonObject, (_, value) => {
       if (typeof value === "bigint") {
