@@ -5,8 +5,6 @@ import {
   AccordionTrigger,
 } from "@/components/UI/Accordion";
 import { Button } from "@/components/UI/Button";
-import { getEncodedEip712Data } from "@theqrl/web3-zond-abi";
-import { sign } from "@theqrl/web3-zond-accounts";
 import {
   Form,
   FormControl,
@@ -23,15 +21,20 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/UI/Tooltip";
+import { getHexSeedFromMnemonic } from "@/functions/getHexSeedFromMnemonic";
 import { useStore } from "@/stores/store";
 import StringUtil from "@/utilities/stringUtil";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Dilithium } from "@theqrl/wallet.js";
+import { bytesToHex } from "@theqrl/web3-utils";
+import { getEncodedEip712Data } from "@theqrl/web3-zond-abi";
+import { parseAndValidateSeed, sign } from "@theqrl/web3-zond-accounts";
+import { Buffer } from "buffer";
 import { Copy } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { getHexSeedFromMnemonic } from "@/functions/getHexSeedFromMnemonic";
 
 const FormSchema = z.object({
   mnemonicPhrases: z.string().min(1, "Mnemonic phrases are required"),
@@ -90,20 +93,24 @@ const ZondSignTypedDataV4Content = observer(() => {
   const signTypedDataV4 = async () => {
     try {
       const mnemonicPhrases = watch().mnemonicPhrases.trim();
-      const addressFromMnemonic = zondInstance?.accounts.seedToAccount(
-        getHexSeedFromMnemonic(mnemonicPhrases),
-      )?.address;
+      const seed = getHexSeedFromMnemonic(mnemonicPhrases);
+      const addressFromMnemonic =
+        zondInstance?.accounts.seedToAccount(seed)?.address;
       if (fromAddress !== addressFromMnemonic) {
         throw new Error("Mnemonic phrases did not match with the address");
       }
       const messageHash = getEncodedEip712Data(typedData, true);
-      const signature = sign(
-        messageHash,
-        getHexSeedFromMnemonic(mnemonicPhrases),
-      )?.signature;
+      const signature = sign(messageHash, seed)?.signature;
+
+      const seedUint8Array = parseAndValidateSeed(seed);
+      const buf = Buffer.from(seedUint8Array);
+      const acc = new Dilithium(buf);
+      const publicKey = bytesToHex(acc.getPK());
+
       if (signature) {
         addToResponseData({
           signature,
+          publicKey,
         });
       } else {
         throw new Error("Message data could not be signed");

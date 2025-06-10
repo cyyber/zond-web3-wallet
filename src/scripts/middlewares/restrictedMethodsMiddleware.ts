@@ -152,9 +152,9 @@ export const restrictedMethodsMiddleware: JsonRpcMiddleware<
               break;
             case RESTRICTED_METHODS.ZOND_SIGN_TYPED_DATA_V4:
             case RESTRICTED_METHODS.PERSONAL_SIGN:
-              const signature = restrictedMethodResult?.response?.signature;
-              if (signature) {
-                res.result = signature;
+              const signedData = restrictedMethodResult?.response;
+              if (signedData) {
+                res.result = signedData;
               } else {
                 res.error = providerErrors.unsupportedMethod({
                   message: restrictedMethodResult?.response?.error?.message,

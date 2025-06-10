@@ -15,16 +15,19 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/UI/Tooltip";
+import { getHexSeedFromMnemonic } from "@/functions/getHexSeedFromMnemonic";
 import { useStore } from "@/stores/store";
+import StringUtil from "@/utilities/stringUtil";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Dilithium } from "@theqrl/wallet.js";
+import { bytesToHex } from "@theqrl/web3-utils";
+import { parseAndValidateSeed } from "@theqrl/web3-zond-accounts";
+import { Buffer } from "buffer";
 import { Copy } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Buffer } from "buffer";
-import { getHexSeedFromMnemonic } from "@/functions/getHexSeedFromMnemonic";
-import StringUtil from "@/utilities/stringUtil";
 
 const FormSchema = z.object({
   mnemonicPhrases: z.string().min(1, "Mnemonic phrases are required"),
@@ -69,19 +72,26 @@ const PersonalSign = observer(() => {
   const personalSign = async () => {
     try {
       const mnemonicPhrases = watch().mnemonicPhrases.trim();
-      const addressFromMnemonic = zondInstance?.accounts.seedToAccount(
-        getHexSeedFromMnemonic(mnemonicPhrases),
-      )?.address;
+      const seed = getHexSeedFromMnemonic(mnemonicPhrases);
+      const addressFromMnemonic =
+        zondInstance?.accounts.seedToAccount(seed)?.address;
       if (fromAddress !== addressFromMnemonic) {
         throw new Error("Mnemonic phrases did not match with the address");
       }
       const signature = zondInstance?.accounts.sign(
         params?.[0],
-        getHexSeedFromMnemonic(mnemonicPhrases),
+        seed,
       )?.signature;
-      if (signature) {
+
+      const seedUint8Array = parseAndValidateSeed(seed);
+      const buf = Buffer.from(seedUint8Array);
+      const acc = new Dilithium(buf);
+      const publicKey = bytesToHex(acc.getPK());
+
+      if (signature && publicKey) {
         addToResponseData({
           signature,
+          publicKey,
         });
       } else {
         throw new Error("Message data could not be signed");
