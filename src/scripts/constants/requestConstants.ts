@@ -2,6 +2,7 @@
 export const UNRESTRICTED_METHODS = Object.freeze({
   NET_VERSION: "net_version",
   WALLET_REVOKE_PERMISSIONS: "wallet_revokePermissions",
+  WEB_3_CLIENT_VERSION: "web3_clientVersion",
   ZOND_ACCOUNTS: "zond_accounts",
   ZOND_BLOCK_NUMBER: "zond_blockNumber",
   ZOND_CALL: "zond_call",

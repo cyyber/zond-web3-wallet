@@ -222,6 +222,9 @@ const prepareListeners = () => {
           new URL(message?.data?.senderData?.url ?? "").origin,
         );
         return "";
+      } else if (method === UNRESTRICTED_METHODS.WEB_3_CLIENT_VERSION) {
+        const currentVersion = await zond?.getNodeInfo();
+        return currentVersion;
       } else if (method === UNRESTRICTED_METHODS.ZOND_GET_BALANCE) {
         const [accountAddress, accountBlockNumber] = message.data.params;
         const balance = await zond?.getBalance(
