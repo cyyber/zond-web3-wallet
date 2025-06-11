@@ -198,6 +198,12 @@ const prepareListeners = () => {
         const blockNumber = await zond.getBlock(block, hydrated);
         return getSerializableObject(blockNumber);
       } else if (
+        method === UNRESTRICTED_METHODS.ZOND_GET_BLOCK_TRANSACTION_COUNT_BY_HASH
+      ) {
+        const [blockHash] = message.data.params;
+        const transactionCount = await zond.getBlockTransactionCount(blockHash);
+        return "0x".concat(transactionCount.toString(16));
+      } else if (
         method === UNRESTRICTED_METHODS.ZOND_WEB3_WALLET_GET_PROVIDER_STATE
       ) {
         const chainId = (await zond?.getChainId())?.toString() ?? "";

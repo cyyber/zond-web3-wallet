@@ -12,6 +12,8 @@ export const UNRESTRICTED_METHODS = Object.freeze({
   ZOND_GET_BALANCE: "zond_getBalance",
   ZOND_GET_BLOCK_BY_HASH: "zond_getBlockByHash",
   ZOND_GET_BLOCK_BY_NUMBER: "zond_getBlockByNumber",
+  ZOND_GET_BLOCK_TRANSACTION_COUNT_BY_HASH:
+    "zond_getBlockTransactionCountByHash",
   ZOND_GET_CODE: "zond_getCode",
   ZOND_GET_TRANSACTION_BY_HASH: "zond_getTransactionByHash",
   ZOND_GET_TRANSACTION_COUNT: "zond_getTransactionCount",
