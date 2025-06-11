@@ -8,6 +8,7 @@ export const UNRESTRICTED_METHODS = Object.freeze({
   ZOND_CALL: "zond_call",
   ZOND_CHAIN_ID: "zond_chainId",
   ZOND_ESTIMATE_GAS: "zond_estimateGas",
+  ZOND_FEE_HISTORY: "zond_feeHistory",
   ZOND_GAS_PRICE: "zond_gasPrice",
   ZOND_GET_BALANCE: "zond_getBalance",
   ZOND_GET_BLOCK_BY_HASH: "zond_getBlockByHash",
