@@ -195,13 +195,17 @@ const prepareListeners = () => {
       if (method === UNRESTRICTED_METHODS.ZOND_GET_BLOCK_BY_NUMBER) {
         // @ts-ignore
         const [block, hydrated] = message?.data?.params;
-        const blockNumber = await zond.getBlock(block, hydrated);
-        return getSerializableObject(blockNumber);
+        const blockInformation = await zond.getBlock(block, hydrated);
+        return getSerializableObject(blockInformation);
       } else if (
-        method === UNRESTRICTED_METHODS.ZOND_GET_BLOCK_TRANSACTION_COUNT_BY_HASH
+        method ===
+          UNRESTRICTED_METHODS.ZOND_GET_BLOCK_TRANSACTION_COUNT_BY_HASH ||
+        method ===
+          UNRESTRICTED_METHODS.ZOND_GET_BLOCK_TRANSACTION_COUNT_BY_NUMBER
       ) {
-        const [blockHash] = message.data.params;
-        const transactionCount = await zond.getBlockTransactionCount(blockHash);
+        const [blockHashOrNumber] = message.data.params;
+        const transactionCount =
+          await zond.getBlockTransactionCount(blockHashOrNumber);
         return "0x".concat(transactionCount.toString(16));
       } else if (
         method === UNRESTRICTED_METHODS.ZOND_WEB3_WALLET_GET_PROVIDER_STATE
