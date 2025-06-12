@@ -286,6 +286,14 @@ const prepareListeners = () => {
         const [address, storageKeys, blockNumber] = message.data.params;
         const proof = await zond.getProof(address, storageKeys, blockNumber);
         return getSerializableObject(proof);
+      } else if (method === UNRESTRICTED_METHODS.ZOND_GET_STORAGE_AT) {
+        const [address, storageSlot, blockNumber] = message.data.params;
+        const storageAt = await zond.getStorageAt(
+          address,
+          storageSlot,
+          blockNumber,
+        );
+        return storageAt;
       } else if (method === UNRESTRICTED_METHODS.ZOND_CHAIN_ID) {
         const chainId = await zond.getChainId({
           number: FMT_NUMBER.HEX,
