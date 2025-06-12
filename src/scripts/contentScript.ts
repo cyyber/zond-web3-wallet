@@ -278,6 +278,10 @@ const prepareListeners = () => {
         const [address, blockNumber] = message.data.params;
         const byteCode = await zond.getCode(address, blockNumber);
         return byteCode;
+      } else if (method === UNRESTRICTED_METHODS.ZOND_GET_LOGS) {
+        const [filter] = message.data.params;
+        const logs = await zond.getPastLogs(filter);
+        return getSerializableObject(logs);
       } else if (method === UNRESTRICTED_METHODS.ZOND_CHAIN_ID) {
         const chainId = await zond.getChainId({
           number: FMT_NUMBER.HEX,
