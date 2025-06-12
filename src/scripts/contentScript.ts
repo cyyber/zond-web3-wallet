@@ -1,5 +1,5 @@
 import StorageUtil from "@/utilities/storageUtil";
-import Web3 from "@theqrl/web3";
+import Web3, { FMT_BYTES, FMT_NUMBER } from "@theqrl/web3";
 import {
   ObjectMultiplex,
   Substream,
@@ -195,8 +195,18 @@ const prepareListeners = () => {
       if (method === UNRESTRICTED_METHODS.ZOND_GET_BLOCK_BY_NUMBER) {
         // @ts-ignore
         const [block, hydrated] = message?.data?.params;
-        const blockNumber = await zond.getBlock(block, hydrated);
-        return getSerializableObject(blockNumber);
+        const blockInformation = await zond.getBlock(block, hydrated);
+        return getSerializableObject(blockInformation);
+      } else if (
+        method ===
+          UNRESTRICTED_METHODS.ZOND_GET_BLOCK_TRANSACTION_COUNT_BY_HASH ||
+        method ===
+          UNRESTRICTED_METHODS.ZOND_GET_BLOCK_TRANSACTION_COUNT_BY_NUMBER
+      ) {
+        const [blockHashOrNumber] = message.data.params;
+        const transactionCount =
+          await zond.getBlockTransactionCount(blockHashOrNumber);
+        return "0x".concat(transactionCount.toString(16));
       } else if (
         method === UNRESTRICTED_METHODS.ZOND_WEB3_WALLET_GET_PROVIDER_STATE
       ) {
@@ -208,6 +218,9 @@ const prepareListeners = () => {
           isUnlocked: false,
           accounts: [],
         } as Parameters<BaseProvider["_initializeState"]>[0];
+      } else if (method === UNRESTRICTED_METHODS.ZOND_SYNCING) {
+        const isSyncing = await zond.isSyncing();
+        return isSyncing;
       } else if (method === UNRESTRICTED_METHODS.NET_VERSION) {
         const networkId = await zond.net.getId();
         return "0x".concat(networkId.toString(16));
@@ -222,6 +235,9 @@ const prepareListeners = () => {
           new URL(message?.data?.senderData?.url ?? "").origin,
         );
         return "";
+      } else if (method === UNRESTRICTED_METHODS.WEB_3_CLIENT_VERSION) {
+        const currentVersion = await zond?.getNodeInfo();
+        return currentVersion;
       } else if (method === UNRESTRICTED_METHODS.ZOND_GET_BALANCE) {
         const [accountAddress, accountBlockNumber] = message.data.params;
         const balance = await zond?.getBalance(
@@ -233,6 +249,15 @@ const prepareListeners = () => {
         const [estimateGasParam] = message.data.params;
         const estimatedGas = await zond.estimateGas(estimateGasParam);
         return "0x".concat(estimatedGas.toString(16));
+      } else if (method === UNRESTRICTED_METHODS.ZOND_FEE_HISTORY) {
+        const [blockCount, newestBlock, rewardPercentiles] =
+          message.data.params;
+        const feeHistory = await zond.getFeeHistory(
+          blockCount,
+          newestBlock,
+          rewardPercentiles,
+        );
+        return getSerializableObject(feeHistory);
       } else if (method === UNRESTRICTED_METHODS.ZOND_BLOCK_NUMBER) {
         const zondBlockNumber = await zond.getBlockNumber();
         return "0x".concat(zondBlockNumber.toString(16));
@@ -256,6 +281,39 @@ const prepareListeners = () => {
         const [address, blockNumber] = message.data.params;
         const byteCode = await zond.getCode(address, blockNumber);
         return byteCode;
+      } else if (method === UNRESTRICTED_METHODS.ZOND_GET_LOGS) {
+        const [filter] = message.data.params;
+        const logs = await zond.getPastLogs(filter);
+        return getSerializableObject(logs);
+      } else if (method === UNRESTRICTED_METHODS.ZOND_GET_PROOF) {
+        const [address, storageKeys, blockNumber] = message.data.params;
+        const proof = await zond.getProof(address, storageKeys, blockNumber);
+        return getSerializableObject(proof);
+      } else if (method === UNRESTRICTED_METHODS.ZOND_GET_STORAGE_AT) {
+        const [address, storageSlot, blockNumber] = message.data.params;
+        const storageAt = await zond.getStorageAt(
+          address,
+          storageSlot,
+          blockNumber,
+        );
+        return storageAt;
+      } else if (method === UNRESTRICTED_METHODS.ZOND_CHAIN_ID) {
+        const chainId = await zond.getChainId({
+          number: FMT_NUMBER.HEX,
+          bytes: FMT_BYTES.HEX,
+        });
+        return chainId;
+      } else if (method === UNRESTRICTED_METHODS.ZOND_GET_TRANSACTION_COUNT) {
+        const [address, block] = message.data.params;
+        const transactionCount = await zond.getTransactionCount(address, block);
+        return "0x".concat(transactionCount.toString(16));
+      } else if (method === UNRESTRICTED_METHODS.ZOND_GAS_PRICE) {
+        const gasPrice = await zond.getGasPrice();
+        return "0x".concat(gasPrice.toString(16));
+      } else if (method === UNRESTRICTED_METHODS.ZOND_GET_BLOCK_BY_HASH) {
+        const [blockHash, hydrated] = message.data.params;
+        const blockInformation = await zond.getBlock(blockHash, hydrated);
+        return getSerializableObject(blockInformation);
       } else {
         return "";
       }
