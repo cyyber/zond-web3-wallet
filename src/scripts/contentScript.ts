@@ -218,6 +218,9 @@ const prepareListeners = () => {
           isUnlocked: false,
           accounts: [],
         } as Parameters<BaseProvider["_initializeState"]>[0];
+      } else if (method === UNRESTRICTED_METHODS.ZOND_SYNCING) {
+        const isSyncing = await zond.isSyncing();
+        return isSyncing;
       } else if (method === UNRESTRICTED_METHODS.NET_VERSION) {
         const networkId = await zond.net.getId();
         return "0x".concat(networkId.toString(16));
